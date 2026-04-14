@@ -160,7 +160,7 @@ if (!isset($_SESSION['user'])) {
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
+                        <table class="table table-hover table-striped align-middle mb-0">
                             <thead class="bg-light text-secondary">
                                 <tr>
                                     <th class="px-4 py-3">Name</th>
@@ -168,7 +168,6 @@ if (!isset($_SESSION['user'])) {
                                     <th class="px-4 py-3 text-center">Quantity</th>
                                     <th class="px-4 py-3">Price</th>
                                     <th class="px-4 py-3">Supplier</th>
-                                    <th class="px-4 py-3">Last Updated</th>
                                     <th class="px-4 py-3 text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -353,9 +352,6 @@ if (!isset($_SESSION['user'])) {
                     </td>
                     <td class="px-4 py-3 text-secondary">
                         ${item.supplier}
-                    </td>
-                    <td class="px-4 py-3 text-secondary small">
-                        ${item.last_updated}
                     </td>
                     <td class="px-4 py-3 text-center">
                         <button onclick="openEditModal('${item.id}')" class="btn btn-sm btn-outline-primary border-0 me-1">
