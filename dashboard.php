@@ -58,6 +58,11 @@ if (!isset($_SESSION['user'])) {
                     </button>
                     
                     <div class="ms-auto d-flex align-items-center">
+                        <!-- Dark Mode Toggle -->
+                        <button class="btn btn-outline-secondary btn-sm me-3 border-0 rounded-circle" id="themeToggle">
+                            <i class="bi bi-moon-stars fs-5"></i>
+                        </button>
+
                         <div class="dropdown">
                             <a class="nav-link dropdown-toggle fw-semibold text-dark" href="#" role="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-person-circle me-1"></i> <?php echo $_SESSION['user']['username']; ?>
@@ -264,6 +269,19 @@ if (!isset($_SESSION['user'])) {
         </div>
     </div>
 
+    <!-- Toast Notification Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center">
+                    <i id="toastIcon" class="bi me-2 fs-5"></i>
+                    <span id="toastMessage"></span>
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -271,6 +289,45 @@ if (!isset($_SESSION['user'])) {
         // Global variables
         let inventoryData = [];
         let inventoryChart = null;
+
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        // Check for saved theme
+        if (localStorage.getItem('theme') === 'dark') {
+            body.setAttribute('data-theme', 'dark');
+            themeToggle.innerHTML = '<i class="bi bi-sun fs-5"></i>';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.innerHTML = '<i class="bi bi-moon-stars fs-5"></i>';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.innerHTML = '<i class="bi bi-sun fs-5"></i>';
+            }
+        });
+
+        // Toast Helper
+        function showToast(message, type = 'success') {
+            const toastEl = document.getElementById('liveToast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+            
+            toastMessage.textContent = message;
+            toastEl.className = `toast border-0 shadow-lg bg-${type} text-white`;
+            
+            if (type === 'success') toastIcon.className = 'bi bi-check-circle-fill me-2 fs-5';
+            else if (type === 'danger') toastIcon.className = 'bi bi-exclamation-circle-fill me-2 fs-5';
+            else if (type === 'warning') toastIcon.className = 'bi bi-exclamation-triangle-fill me-2 fs-5';
+            
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
 
         // Sidebar Toggle
         document.getElementById('sidebarCollapse').addEventListener('click', function() {
@@ -292,8 +349,11 @@ if (!isset($_SESSION['user'])) {
             document.getElementById('editForm').addEventListener('submit', updateItem);
             document.getElementById('searchInput').addEventListener('input', filterItems);
             
-            // Refresh data every 30 seconds
-            setInterval(fetchInventoryData, 30000);
+            // Refresh data every 60 seconds
+            setInterval(fetchInventoryData, 60000);
+            
+            // Show welcome toast
+            showToast('Welcome to your Dashboard!', 'success');
         });
 
         // Fetch inventory data
@@ -312,8 +372,8 @@ if (!isset($_SESSION['user'])) {
         // Update dashboard stats
         function updateDashboard(data) {
             const totalItems = data.length;
-            const lowStockItems = data.filter(item => item.quantity < 10).length;
-            const inventoryValue = data.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+            const lowStockItems = data.filter(item => parseInt(item.quantity) < 10).length;
+            const inventoryValue = data.reduce((sum, item) => sum + (parseInt(item.quantity) * parseFloat(item.price)), 0);
             
             document.getElementById('totalItems').textContent = totalItems;
             document.getElementById('lowStockItems').textContent = lowStockItems;
@@ -326,38 +386,48 @@ if (!isset($_SESSION['user'])) {
             tableBody.innerHTML = '';
             
             if (data.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="px-4 py-4 text-center text-secondary">No inventory items found</td></tr>';
+                tableBody.innerHTML = `<tr><td colspan="6">
+                    <div class="empty-state">
+                        <i class="bi bi-box2"></i>
+                        <h5 class="text-secondary">No inventory items found</h5>
+                        <p class="text-muted">Start by adding a new item to your system.</p>
+                    </div>
+                </td></tr>`;
                 return;
             }
             
             data.forEach(item => {
                 const row = document.createElement('tr');
+                const qty = parseInt(item.quantity);
                 
                 // Highlight low stock items
-                const badgeClass = item.quantity < 5 ? 'bg-danger' : 
-                                 item.quantity < 10 ? 'bg-warning text-dark' : 'bg-success';
+                const badgeClass = qty < 5 ? 'bg-danger' : 
+                                 qty < 10 ? 'bg-warning text-dark' : 'bg-success';
                 
                 row.innerHTML = `
                     <td class="px-4 py-3">
-                        <div class="fw-bold text-dark">${item.name}</div>
+                        <div class="fw-bold d-flex align-items-center">
+                            <i class="bi bi-dot fs-2 text-${qty < 10 ? 'warning' : 'success'} me-n1"></i>
+                            ${item.name}
+                        </div>
                     </td>
                     <td class="px-4 py-3">
                         <span class="badge bg-light text-secondary border border-secondary border-opacity-25 px-3 py-2">${item.category}</span>
                     </td>
                     <td class="px-4 py-3 text-center">
-                        <span class="badge ${badgeClass} rounded-pill px-3 py-2">${item.quantity}</span>
+                        <span class="badge ${badgeClass} rounded-pill px-3 py-2" style="min-width: 45px;">${qty}</span>
                     </td>
                     <td class="px-4 py-3">
-                        <div class="fw-bold text-dark">$${item.price.toFixed(2)}</div>
+                        <div class="fw-bold">$${parseFloat(item.price).toFixed(2)}</div>
                     </td>
                     <td class="px-4 py-3 text-secondary">
                         ${item.supplier}
                     </td>
                     <td class="px-4 py-3 text-center">
-                        <button onclick="openEditModal('${item.id}')" class="btn btn-sm btn-outline-primary border-0 me-1">
+                        <button onclick="openEditModal('${item.id}')" class="btn btn-sm btn-outline-primary border-0 me-1" title="Edit Item">
                             <i class="bi bi-pencil-square"></i>
                         </button>
-                        <button onclick="deleteItem('${item.id}')" class="btn btn-sm btn-outline-danger border-0">
+                        <button onclick="deleteItem('${item.id}')" class="btn btn-sm btn-outline-danger border-0" title="Delete Item">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>
@@ -398,12 +468,17 @@ if (!isset($_SESSION['user'])) {
             })
             .then(response => response.json())
             .then(data => {
-                const addModal = bootstrap.Modal.getInstance(document.getElementById('addModal'));
+                const addModalEl = document.getElementById('addModal');
+                const addModal = bootstrap.Modal.getInstance(addModalEl);
                 addModal.hide();
                 fetchInventoryData();
                 document.getElementById('addForm').reset();
+                showToast('Item added successfully!', 'success');
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Error adding item.', 'danger');
+            });
         }
 
         // Update item
@@ -428,11 +503,16 @@ if (!isset($_SESSION['user'])) {
             })
             .then(response => response.json())
             .then(data => {
-                const editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+                const editModalEl = document.getElementById('editModal');
+                const editModal = bootstrap.Modal.getInstance(editModalEl);
                 editModal.hide();
                 fetchInventoryData();
+                showToast('Item updated successfully!', 'success');
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Error updating item.', 'danger');
+            });
         }
 
         // Delete item
@@ -442,8 +522,12 @@ if (!isset($_SESSION['user'])) {
                     .then(response => response.json())
                     .then(data => {
                         fetchInventoryData();
+                        showToast('Item deleted successfully!', 'warning');
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showToast('Error deleting item.', 'danger');
+                    });
             }
         }
 
@@ -466,6 +550,7 @@ if (!isset($_SESSION['user'])) {
         // Update inventory chart
         function updateInventoryChart(data) {
             const ctx = document.getElementById('inventoryChart').getContext('2d');
+            const isDark = body.getAttribute('data-theme') === 'dark';
             
             // Group by category
             const categories = {};
@@ -482,6 +567,8 @@ if (!isset($_SESSION['user'])) {
             if (inventoryChart) {
                 inventoryChart.data.labels = labels;
                 inventoryChart.data.datasets[0].data = values;
+                inventoryChart.options.scales.x.ticks.color = isDark ? '#a0a0a0' : '#666';
+                inventoryChart.options.scales.y.ticks.color = isDark ? '#a0a0a0' : '#666';
                 inventoryChart.update();
             } else {
                 inventoryChart = new Chart(ctx, {
@@ -504,8 +591,15 @@ if (!isset($_SESSION['user'])) {
                             legend: { display: false }
                         },
                         scales: {
-                            y: { beginAtZero: true, grid: { borderDash: [2, 2] } },
-                            x: { grid: { display: false } }
+                            y: { 
+                                beginAtZero: true, 
+                                grid: { color: isDark ? '#3f414e' : '#e2e2e2', borderDash: [2, 2] },
+                                ticks: { color: isDark ? '#a0a0a0' : '#666' }
+                            },
+                            x: { 
+                                grid: { display: false },
+                                ticks: { color: isDark ? '#a0a0a0' : '#666' }
+                            }
                         }
                     }
                 });
@@ -513,4 +607,4 @@ if (!isset($_SESSION['user'])) {
         }
     </script>
 </body>
-</html>
+</html>

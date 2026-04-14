@@ -105,6 +105,82 @@ body {
     margin-left: 0;
 }
 
+/* Dark Mode Variables */
+[data-theme='dark'] {
+    --bg-color: #1a1c23;
+    --light-color: #24262d;
+    --dark-color: #f8f9fc;
+    --primary-color: #7b96e8;
+    --secondary-color: #a0a0a0;
+    --card-shadow: 0 0.5rem 2rem 0 rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='dark'] body {
+    background-color: var(--bg-color);
+    color: #e2e2e2;
+}
+
+[data-theme='dark'] .card, 
+[data-theme='dark'] #sidebar,
+[data-theme='dark'] .bg-white {
+    background-color: #24262d !important;
+}
+
+[data-theme='dark'] .text-dark,
+[data-theme='dark'] .fw-bold {
+    color: #fff !important;
+}
+
+[data-theme='dark'] .table {
+    color: #e2e2e2;
+}
+
+[data-theme='dark'] .table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-accent-bg: rgba(255, 255, 255, 0.05);
+    color: #e2e2e2;
+}
+
+[data-theme='dark'] .form-control {
+    background-color: #1a1c23;
+    border-color: #3f414e;
+    color: #fff;
+}
+
+[data-theme='dark'] .form-control:focus {
+    background-color: #1a1c23;
+    color: #fff;
+}
+
+[data-theme='dark'] .input-group-text {
+    background-color: #3f414e;
+    border-color: #3f414e;
+    color: #fff;
+}
+
+[data-theme='dark'] .modal-content {
+    background-color: #24262d;
+    color: #fff;
+}
+
+/* Empty State Styling */
+.empty-state {
+    padding: 60px 0;
+    text-align: center;
+}
+
+.empty-state i {
+    font-size: 80px;
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+    display: block;
+    opacity: 0.3;
+}
+
+/* Transitions */
+body, .card, #sidebar, #content, .navbar, .form-control {
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
 @media (max-width: 768px) {
     #sidebar {
         margin-left: -250px;
