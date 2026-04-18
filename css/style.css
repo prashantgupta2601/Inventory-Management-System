@@ -181,6 +181,39 @@ body, .card, #sidebar, #content, .navbar, .form-control {
     transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* AI Feature Styles */
+.ai-badge {
+    background: linear-gradient(135deg, #36b9cc 0%, #17a2b8 100%);
+    color: white;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(54, 185, 204, 0.4);
+    font-weight: 600;
+}
+
+.ai-trend-up {
+    color: var(--success-color);
+}
+
+.ai-trend-down {
+    color: var(--danger-color);
+}
+
+.low-stock-pulse {
+    animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 0 0 rgba(231, 74, 59, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(231, 74, 59, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(231, 74, 59, 0);
+    }
+}
+
 @media (max-width: 768px) {
     #sidebar {
         margin-left: -250px;

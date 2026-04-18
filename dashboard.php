@@ -175,7 +175,7 @@ if (!isset($_SESSION['user'])) {
                                     <th class="px-4 py-3">Category</th>
                                     <th class="px-4 py-3 text-center">Quantity</th>
                                     <th class="px-4 py-3">Price</th>
-                                    <th class="px-4 py-3 text-center">Predicted Demand</th>
+                                    <th class="px-4 py-3 text-center"><i class="bi bi-graph-up-arrow me-1"></i> Predicted Demand</th>
                                     <th class="px-4 py-3">Supplier</th>
                                     <th class="px-4 py-3 text-center">Actions</th>
                                 </tr>
@@ -434,7 +434,7 @@ if (!isset($_SESSION['user'])) {
                         <div class="fw-bold d-flex align-items-center">
                             <i class="bi bi-dot fs-2 text-${isLowStock ? 'danger' : (qty < (threshold + 5) ? 'warning' : 'success')} me-n1"></i>
                             ${item.name}
-                            ${isLowStock ? '<span class="ms-2 badge bg-danger text-uppercase" style="font-size: 0.6rem;">Low Stock</span>' : ''}
+                            ${isLowStock ? '<span class="ms-2 badge bg-danger text-uppercase low-stock-pulse" style="font-size: 0.6rem;"><i class="bi bi-graph-down-arrow me-1"></i>Low Stock</span>' : ''}
                         </div>
                     </td>
                     <td class="px-4 py-3">
@@ -447,8 +447,8 @@ if (!isset($_SESSION['user'])) {
                         <div class="fw-bold">$${parseFloat(item.price).toFixed(2)}</div>
                     </td>
                     <td class="px-4 py-3 text-center">
-                        <span class="badge bg-info-subtle text-info border border-info border-opacity-25 px-3 py-2">
-                             ${item.forecast}
+                        <span class="badge ai-badge px-3 py-2">
+                             <i class="bi bi-cpu me-1"></i> ${item.forecast}
                         </span>
                     </td>
                     <td class="px-4 py-3 text-secondary">
