@@ -87,6 +87,9 @@ if (!isset($_SESSION['user'])) {
                         </button>
                     </div>
                 </div>
+                
+                <!-- Smart Alert Container -->
+                <div id="smartAlertContainer"></div>
 
                 <!-- Stats Cards (Step 4 placeholders) -->
                 <div class="row g-4 mb-4">
@@ -373,12 +376,29 @@ if (!isset($_SESSION['user'])) {
         // Update dashboard stats
         function updateDashboard(data) {
             const totalItems = data.length;
-            const lowStockItems = data.filter(item => parseInt(item.quantity) < parseInt(item.min_threshold || 10)).length;
+            const lowStockItemsCount = data.filter(item => parseInt(item.quantity) < parseInt(item.min_threshold || 10)).length;
             const inventoryValue = data.reduce((sum, item) => sum + (parseInt(item.quantity) * parseFloat(item.price)), 0);
             
             document.getElementById('totalItems').textContent = totalItems;
-            document.getElementById('lowStockItems').textContent = lowStockItems;
+            document.getElementById('lowStockItems').textContent = lowStockItemsCount;
             document.getElementById('inventoryValue').textContent = `$${inventoryValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            // Update Smart Alert
+            const alertContainer = document.getElementById('smartAlertContainer');
+            if (lowStockItemsCount > 0) {
+                alertContainer.innerHTML = `
+                    <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center mb-4 fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                        <div>
+                            <strong class="d-block">Low Stock Warning!</strong>
+                            There are <b>${lowStockItemsCount}</b> items with stock below their minimum threshold. Please restock soon.
+                        </div>
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+            } else {
+                alertContainer.innerHTML = '';
+            }
         }
 
         // Render inventory table
