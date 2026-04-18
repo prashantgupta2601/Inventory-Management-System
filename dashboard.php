@@ -450,6 +450,12 @@ if (!isset($_SESSION['user'])) {
                         <span class="badge ai-badge px-3 py-2">
                              <i class="bi bi-cpu me-1"></i> ${item.forecast}
                         </span>
+                        <div class="mt-1" style="font-size: 0.75rem;">
+                            <span class="text-${item.trend === 'up' ? 'success' : (item.trend === 'down' ? 'danger' : 'secondary')}">
+                                <i class="bi bi-arrow-${item.trend === 'up' ? 'up' : (item.trend === 'down' ? 'down' : 'dash')}-right-short"></i>
+                                ${item.trend.toUpperCase()}
+                            </span>
+                        </div>
                     </td>
                     <td class="px-4 py-3 text-secondary">
                         ${item.supplier}
