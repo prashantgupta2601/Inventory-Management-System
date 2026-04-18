@@ -373,7 +373,7 @@ if (!isset($_SESSION['user'])) {
         // Update dashboard stats
         function updateDashboard(data) {
             const totalItems = data.length;
-            const lowStockItems = data.filter(item => parseInt(item.quantity) < 10).length;
+            const lowStockItems = data.filter(item => parseInt(item.quantity) < parseInt(item.min_threshold || 10)).length;
             const inventoryValue = data.reduce((sum, item) => sum + (parseInt(item.quantity) * parseFloat(item.price)), 0);
             
             document.getElementById('totalItems').textContent = totalItems;
@@ -400,16 +400,21 @@ if (!isset($_SESSION['user'])) {
             data.forEach(item => {
                 const row = document.createElement('tr');
                 const qty = parseInt(item.quantity);
+                const threshold = parseInt(item.min_threshold || 10);
+                const isLowStock = qty < threshold;
                 
                 // Highlight low stock items
-                const badgeClass = qty < 5 ? 'bg-danger' : 
-                                 qty < 10 ? 'bg-warning text-dark' : 'bg-success';
+                const badgeClass = isLowStock ? 'bg-danger' : 
+                                 qty < (threshold + 5) ? 'bg-warning text-dark' : 'bg-success';
+                
+                if (isLowStock) row.classList.add('table-danger');
                 
                 row.innerHTML = `
                     <td class="px-4 py-3">
                         <div class="fw-bold d-flex align-items-center">
-                            <i class="bi bi-dot fs-2 text-${qty < 10 ? 'warning' : 'success'} me-n1"></i>
+                            <i class="bi bi-dot fs-2 text-${isLowStock ? 'danger' : (qty < (threshold + 5) ? 'warning' : 'success')} me-n1"></i>
                             ${item.name}
+                            ${isLowStock ? '<span class="ms-2 badge bg-danger text-uppercase" style="font-size: 0.6rem;">Low Stock</span>' : ''}
                         </div>
                     </td>
                     <td class="px-4 py-3">
