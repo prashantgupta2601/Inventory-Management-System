@@ -172,6 +172,7 @@ if (!isset($_SESSION['user'])) {
                                     <th class="px-4 py-3">Category</th>
                                     <th class="px-4 py-3 text-center">Quantity</th>
                                     <th class="px-4 py-3">Price</th>
+                                    <th class="px-4 py-3 text-center">Predicted Demand</th>
                                     <th class="px-4 py-3">Supplier</th>
                                     <th class="px-4 py-3 text-center">Actions</th>
                                 </tr>
@@ -419,6 +420,11 @@ if (!isset($_SESSION['user'])) {
                     </td>
                     <td class="px-4 py-3">
                         <div class="fw-bold">$${parseFloat(item.price).toFixed(2)}</div>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <span class="badge bg-info-subtle text-info border border-info border-opacity-25 px-3 py-2">
+                             ${item.forecast}
+                        </span>
                     </td>
                     <td class="px-4 py-3 text-secondary">
                         ${item.supplier}
