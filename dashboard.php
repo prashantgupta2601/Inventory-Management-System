@@ -328,9 +328,9 @@ foreach ($inventory as $item) {
         let inventoryChart = null;
         let salesChart = null; // New chart variable
 
-        // Data from PHP
-        const productNames = <?php echo json_encode($productNames); ?>;
-        const productSales = <?php echo json_encode($productSales); ?>;
+        // Data from PHP (initial load)
+        let productNames = <?php echo json_encode($productNames); ?>;
+        let productSales = <?php echo json_encode($productSales); ?>;
 
         // Theme Toggle Logic
         const themeToggle = document.getElementById('themeToggle');
@@ -499,9 +499,27 @@ foreach ($inventory as $item) {
                 .then(response => response.json())
                 .then(data => {
                     inventoryData = data;
+                    
+                    // Update global variables for charts
+                    window.productNames = data.map(item => item.name);
+                    window.productSales = data.map(item => item.monthly_sales || [0,0,0,0,0,0]);
+                    
+                    // Update filter dropdown
+                    const productSelect = document.getElementById('productSelect');
+                    const currentValue = productSelect.value;
+                    productSelect.innerHTML = window.productNames.map((name, index) => 
+                        `<option value="${index}" ${index == currentValue ? 'selected' : ''}>${name}</option>`
+                    ).join('');
+
                     updateDashboard(data);
                     renderInventoryTable(data);
                     updateInventoryChart(data);
+                    
+                    // Refresh current sales chart view
+                    if (window.productNames.length > 0) {
+                        const index = (currentValue < window.productNames.length) ? currentValue : 0;
+                        updateSalesChart(index);
+                    }
                 })
                 .catch(error => console.error('Error:', error));
         }
