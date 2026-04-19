@@ -398,9 +398,9 @@ foreach ($inventory as $item) {
         // Initialize Sales Trend Chart
         function initSalesChart() {
             const ctx = document.getElementById('salesChart').getContext('2d');
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
             
-            // For now, use the first product's sales as a default
             const initialSalesData = productSales.length > 0 ? productSales[0] : [0, 0, 0, 0, 0, 0];
             const initialProductName = productNames.length > 0 ? productNames[0] : 'No Data';
 
@@ -409,18 +409,60 @@ foreach ($inventory as $item) {
                 data: {
                     labels: months,
                     datasets: [{
-                        label: `Sales for ${initialProductName}`,
+                        label: `Sales Trend: ${initialProductName}`,
                         data: initialSalesData,
                         borderColor: '#4e73df',
-                        backgroundColor: 'rgba(78, 115, 223, 0.05)',
-                        fill: true
+                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                        fill: true,
+                        tension: 0.4, // Smooth curves
+                        pointRadius: 4,
+                        pointBackgroundColor: '#4e73df',
+                        pointBorderColor: '#fff',
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#4e73df',
+                        pointHoverBorderColor: '#fff',
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: isDark ? '#a0a0a0' : '#666',
+                                usePointStyle: true,
+                                font: { weight: 'bold' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: isDark ? '#2d2e37' : '#fff',
+                            titleColor: isDark ? '#fff' : '#2d2e37',
+                            bodyColor: isDark ? '#a0a0a0' : '#666',
+                            borderColor: '#4e73df',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Sales: ${context.parsed.y} units`;
+                                }
+                            }
+                        }
+                    },
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            grid: {
+                                color: isDark ? '#3f414e' : '#e2e2e2',
+                                borderDash: [2, 2]
+                            },
+                            ticks: { color: isDark ? '#a0a0a0' : '#666' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: isDark ? '#a0a0a0' : '#666' }
                         }
                     }
                 }
