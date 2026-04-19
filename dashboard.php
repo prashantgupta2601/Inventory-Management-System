@@ -594,9 +594,9 @@ foreach ($inventory as $item) {
                         ${item.supplier}
                     </td>
                     <td class="px-4 py-3 text-center">
-                        <button onclick="openEditModal('${item.id}')" class="btn btn-sm btn-outline-primary border-0 me-1" title="Edit Item">
+                        <a href="edit_product.php?id=${item.id}" class="btn btn-sm btn-outline-primary border-0 me-1" title="Edit Item">
                             <i class="bi bi-pencil-square"></i>
-                        </button>
+                        </a>
                         <button onclick="deleteItem('${item.id}')" class="btn btn-sm btn-outline-danger border-0" title="Delete Item">
                             <i class="bi bi-trash"></i>
                         </button>
