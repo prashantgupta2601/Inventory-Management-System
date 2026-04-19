@@ -166,6 +166,22 @@ foreach ($inventory as $item) {
                     </div>
                 </div>
 
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                                <h5 class="m-0 fw-bold text-dark">Sales Trend</h5>
+                                <div id="productFilterContainer" class="d-none">
+                                    <!-- Dropdown will be added in Step 7 -->
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="salesChart" height="80"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-white py-3 border-0">
                         <div class="row align-items-center">
