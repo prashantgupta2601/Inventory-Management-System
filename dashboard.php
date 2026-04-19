@@ -381,6 +381,7 @@ foreach ($inventory as $item) {
         // DOM Ready
         document.addEventListener('DOMContentLoaded', function() {
             fetchInventoryData();
+            initSalesChart(); // Initialize sales chart
             
             // Set up event listeners
             document.getElementById('addForm').addEventListener('submit', addItem);
@@ -393,6 +394,38 @@ foreach ($inventory as $item) {
             // Show welcome toast
             showToast('Welcome to your Dashboard!', 'success');
         });
+
+        // Initialize Sales Trend Chart
+        function initSalesChart() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+            
+            // For now, use the first product's sales as a default
+            const initialSalesData = productSales.length > 0 ? productSales[0] : [0, 0, 0, 0, 0, 0];
+            const initialProductName = productNames.length > 0 ? productNames[0] : 'No Data';
+
+            salesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: `Sales for ${initialProductName}`,
+                        data: initialSalesData,
+                        borderColor: '#4e73df',
+                        backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
 
         // Fetch inventory data
         function fetchInventoryData() {
