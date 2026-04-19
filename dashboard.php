@@ -4,6 +4,18 @@ if (!isset($_SESSION['user'])) {
     header('Location: login.php');
     exit;
 }
+
+// Prepare data for Sales Trend Chart
+$data = json_decode(@file_get_contents('data.json'), true);
+$inventory = $data['inventory'] ?? [];
+
+$productNames = [];
+$productSales = [];
+
+foreach ($inventory as $item) {
+    $productNames[] = $item['name'];
+    $productSales[] = $item['monthly_sales'] ?? [0, 0, 0, 0, 0, 0];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -294,6 +306,11 @@ if (!isset($_SESSION['user'])) {
         // Global variables
         let inventoryData = [];
         let inventoryChart = null;
+        let salesChart = null; // New chart variable
+
+        // Data from PHP
+        const productNames = <?php echo json_encode($productNames); ?>;
+        const productSales = <?php echo json_encode($productSales); ?>;
 
         // Theme Toggle Logic
         const themeToggle = document.getElementById('themeToggle');
