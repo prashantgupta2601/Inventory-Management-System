@@ -18,6 +18,7 @@ if (!isset($_SESSION['user'])) {
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
     <!-- Chart.js -->
+    <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-light">
