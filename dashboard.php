@@ -223,84 +223,22 @@ foreach ($inventory as $item) {
         </div>
     </div>
 
-    <!-- Add Item Modal -->
-    <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-primary text-white border-0">
-                    <h5 class="modal-title fw-bold">Add New Item</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-danger text-white border-0">
+                    <h5 class="modal-title fw-bold">Confirm Delete</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body p-4">
-                    <form id="addForm">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Item Name</label>
-                            <input type="text" class="form-control bg-light" id="name" name="name" placeholder="Enter item name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Category</label>
-                            <input type="text" class="form-control bg-light" id="category" name="category" placeholder="Enter category" required>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold">Quantity</label>
-                                <input type="number" class="form-control bg-light" id="quantity" name="quantity" placeholder="0" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold">Price ($)</label>
-                                <input type="number" step="0.01" class="form-control bg-light" id="price" name="price" placeholder="0.00" required>
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold">Supplier</label>
-                            <input type="text" class="form-control bg-light" id="supplier" name="supplier" placeholder="Enter supplier name" required>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary py-2 fw-bold">SAVE ITEM</button>
-                        </div>
-                    </form>
+                <div class="modal-body p-4 text-center">
+                    <i class="bi bi-exclamation-octagon text-danger display-1 mb-3"></i>
+                    <h4 class="fw-bold">Are you sure?</h4>
+                    <p class="text-secondary">This action cannot be undone. This will permanently delete the product from the inventory.</p>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Item Modal -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-primary text-white border-0">
-                    <h5 class="modal-title fw-bold">Edit Item</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <form id="editForm">
-                        <input type="hidden" id="editId" name="id">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Item Name</label>
-                            <input type="text" class="form-control bg-light" id="editName" name="name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Category</label>
-                            <input type="text" class="form-control bg-light" id="editCategory" name="category" required>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold">Quantity</label>
-                                <input type="number" class="form-control bg-light" id="editQuantity" name="quantity" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold">Price ($)</label>
-                                <input type="number" step="0.01" class="form-control bg-light" id="editPrice" name="price" required>
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold">Supplier</label>
-                            <input type="text" class="form-control bg-light" id="editSupplier" name="supplier" required>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary py-2 fw-bold">UPDATE ITEM</button>
-                        </div>
-                    </form>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light px-4 fw-bold" data-bs-dismiss="modal">CANCEL</button>
+                    <button type="button" id="confirmDeleteBtn" class="btn btn-danger px-4 fw-bold shadow-sm">DELETE NOW</button>
                 </div>
             </div>
         </div>
@@ -704,20 +642,32 @@ foreach ($inventory as $item) {
         }
 
         // Delete item
+        // Delete item
+        let itemToDelete = null;
         function deleteItem(id) {
-            if (confirm('Are you sure you want to delete this item?')) {
-                fetch(`api/delete.php?id=${id}`)
+            itemToDelete = id;
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            if (itemToDelete) {
+                fetch(`api/delete.php?id=${itemToDelete}`)
                     .then(response => response.json())
                     .then(data => {
+                        const deleteModalEl = document.getElementById('deleteModal');
+                        const deleteModal = bootstrap.Modal.getInstance(deleteModalEl);
+                        deleteModal.hide();
                         fetchInventoryData();
                         showToast('Item deleted successfully!', 'warning');
+                        itemToDelete = null;
                     })
                     .catch(error => {
                         console.error('Error:', error);
                         showToast('Error deleting item.', 'danger');
                     });
             }
-        }
+        });
 
         // Modal triggers (not needed anymore with data-bs-target, but keeping for compatibility if invoked via JS)
         function openEditModal(id) {
