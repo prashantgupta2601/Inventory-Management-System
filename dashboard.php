@@ -171,12 +171,16 @@ foreach ($inventory as $item) {
                         <div class="card shadow-sm border-0">
                             <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
                                 <h5 class="m-0 fw-bold text-dark">Sales Trend</h5>
-                                <div id="productFilterContainer" class="d-none">
-                                    <!-- Dropdown will be added in Step 7 -->
+                                <div id="productFilterContainer" class="">
+                                    <select id="productSelect" class="form-select form-select-sm border-0 bg-light fw-bold" style="width: auto;">
+                                        <?php foreach ($productNames as $index => $name): ?>
+                                            <option value="<?php echo $index; ?>"><?php echo $name; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
                             </div>
-                            <div class="card-body">
-                                <canvas id="salesChart" height="80"></canvas>
+                            <div class="card-body" style="height: 350px;">
+                                <canvas id="salesChart"></canvas>
                             </div>
                         </div>
                     </div>
@@ -393,6 +397,12 @@ foreach ($inventory as $item) {
             
             // Show welcome toast
             showToast('Welcome to your Dashboard!', 'success');
+
+            // Product Select Event Listener
+            document.getElementById('productSelect').addEventListener('change', function() {
+                const index = this.value;
+                updateSalesChart(index);
+            });
         });
 
         // Initialize Sales Trend Chart
@@ -467,6 +477,20 @@ foreach ($inventory as $item) {
                     }
                 }
             });
+        }
+
+        // Update Sales Trend Chart
+        function updateSalesChart(index) {
+            if (!salesChart) return;
+            
+            const selectedSalesData = productSales[index];
+            const selectedProductName = productNames[index];
+            
+            salesChart.data.datasets[0].label = `Sales Trend: ${selectedProductName}`;
+            salesChart.data.datasets[0].data = selectedSalesData;
+            salesChart.update();
+            
+            showToast(`Chart updated for ${selectedProductName}`, 'info');
         }
 
         // Fetch inventory data
