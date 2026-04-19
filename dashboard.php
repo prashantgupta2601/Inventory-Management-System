@@ -95,9 +95,9 @@ foreach ($inventory as $item) {
                         <p class="text-secondary m-0">Manage and track your items efficiently</p>
                     </div>
                     <div class="col-auto">
-                        <button type="button" class="btn btn-primary px-4 py-2 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#addModal">
-                            <i class="bi bi-plus-lg me-2"></i> Add New Item
-                        </button>
+                        <a href="add_product.php" class="btn btn-primary px-4 py-2 fw-bold shadow-sm">
+                            <i class="bi bi-plus-lg me-2"></i> Add New Product
+                        </a>
                     </div>
                 </div>
                 
