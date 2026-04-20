@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $monthly_sales = json_encode([0, 0, 0, 0, 0, 0]);
 
         $stmt = $conn->prepare("INSERT INTO inventory (id, name, category, quantity, price, supplier, min_threshold, sales_history, monthly_sales) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssiddis s", $id, $name, $category, $quantity, $price, $supplier, $min_threshold, $sales_history, $monthly_sales);
+        $stmt->bind_param("sssidsiss", $id, $name, $category, $quantity, $price, $supplier, $min_threshold, $sales_history, $monthly_sales);
 
         if ($stmt->execute()) {
             header('Location: dashboard.php?added=1');
