@@ -1,4 +1,8 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -15,6 +19,20 @@ if ($conn->connect_error) {
 // Create database if not exists
 $conn->query("CREATE DATABASE IF NOT EXISTS $dbname");
 $conn->select_db($dbname);
+
+// Security Headers
+header("X-Content-Type-Options: nosniff");
+header("X-Frame-Options: DENY");
+header("X-XSS-Protection: 1; mode=block");
+
+// CSRF Protection Helpers
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+function verify_csrf_token($token) {
+    return !empty($token) && hash_equals($_SESSION['csrf_token'], $token);
+}
 
 // Create tables if they do not exist
 $sql_inventory = "CREATE TABLE IF NOT EXISTS inventory (

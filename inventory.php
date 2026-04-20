@@ -1,7 +1,9 @@
 <?php
 include 'config.php';
 
-$result = $conn->query("SELECT * FROM inventory ORDER BY last_updated DESC");
+$stmt = $conn->prepare("SELECT * FROM inventory ORDER BY last_updated DESC");
+$stmt->execute();
+$result = $stmt->get_result();
 
 echo "<table class='w-full border-collapse'>
     <thead>
