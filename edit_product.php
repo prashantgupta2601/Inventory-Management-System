@@ -48,11 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $update_stmt->bind_param("sssidisss", $name, $category, $quantity, $price, $supplier, $min_threshold, $sales_history, $monthly_sales, $id);
 
         if ($update_stmt->execute()) {
-            $message = "Product updated successfully!";
-            $messageType = "success";
-            // Refresh product data for display
-            $stmt->execute();
-            $product = $stmt->get_result()->fetch_assoc();
+            header('Location: dashboard.php?updated=1');
+            exit;
         } else {
             $message = "Error updating product: " . $conn->error;
             $messageType = "danger";

@@ -31,8 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("sssiddis s", $id, $name, $category, $quantity, $price, $supplier, $min_threshold, $sales_history, $monthly_sales);
 
         if ($stmt->execute()) {
-            $message = "Product '$name' added successfully!";
-            $messageType = "success";
+            header('Location: dashboard.php?added=1');
+            exit;
         } else {
             $message = "Database error: " . $conn->error;
             $messageType = "danger";
