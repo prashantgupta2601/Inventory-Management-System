@@ -326,15 +326,22 @@ foreach ($inventory as $item) {
             initSalesChart(); // Initialize sales chart
             
             // Set up event listeners
-            document.getElementById('addForm').addEventListener('submit', addItem);
-            document.getElementById('editForm').addEventListener('submit', updateItem);
             document.getElementById('searchInput').addEventListener('input', filterItems);
             
             // Refresh data every 60 seconds
             setInterval(fetchInventoryData, 60000);
             
-            // Show welcome toast
-            showToast('Welcome to your Dashboard!', 'success');
+            // Check for success messages in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('added')) {
+                showToast('Product added successfully!', 'success');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (urlParams.has('updated')) {
+                showToast('Product updated successfully!', 'success');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else {
+                showToast('Welcome to your Dashboard!', 'success');
+            }
 
             // Product Select Event Listener
             document.getElementById('productSelect').addEventListener('change', function() {
