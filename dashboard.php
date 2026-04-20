@@ -550,12 +550,14 @@ foreach ($inventory as $item) {
                         ${item.supplier}
                     </td>
                     <td class="px-4 py-3 text-center">
-                        <a href="edit_product.php?id=${item.id}" class="btn btn-sm btn-outline-primary border-0 me-1" title="Edit Item">
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
-                        <button onclick="deleteItem('${item.id}')" class="btn btn-sm btn-outline-danger border-0" title="Delete Item">
-                            <i class="bi bi-trash"></i>
-                        </button>
+                        <div class="d-flex justify-content-center">
+                            <a href="edit_product.php?id=${item.id}" class="action-btn btn-edit-table me-2" title="Edit Item">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <button onclick="deleteItem('${item.id}')" class="action-btn btn-delete-table" title="Delete Item">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
                     </td>
                 `;
                 tableBody.appendChild(row);
