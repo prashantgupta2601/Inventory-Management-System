@@ -1,11 +1,29 @@
 <?php
+require_once '../config.php';
 header('Content-Type: application/json');
-$id = $_GET['id'];
 
-$data = json_decode(file_get_contents('../data.json'), true);
-$data['inventory'] = array_filter($data['inventory'], function($item) use ($id) {
-    return $item['id'] !== $id;
-});
-file_put_contents('../data.json', json_encode($data, JSON_PRETTY_PRINT));
-echo json_encode(['success' => true]);
+// Auth check
+if (!isset($_SESSION['user'])) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Unauthorized']);
+    exit;
+}
+
+$id = $_GET['id'] ?? '';
+
+if (!$id) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Missing product ID']);
+    exit;
+}
+
+$stmt = $conn->prepare("DELETE FROM inventory WHERE id = ?");
+$stmt->bind_param("s", $id);
+
+if ($stmt->execute()) {
+    echo json_encode(['success' => true, 'message' => 'Product deleted successfully']);
+} else {
+    http_response_code(500);
+    echo json_encode(['error' => 'Database error: ' . $conn->error]);
+}
 ?>
