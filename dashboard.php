@@ -94,11 +94,13 @@ foreach ($inventory as $item) {
                         <h2 class="fw-bold text-dark m-0">Inventory Dashboard</h2>
                         <p class="text-secondary m-0">Manage and track your items efficiently</p>
                     </div>
+                    <?php if ($_SESSION['user']['role'] === 'admin'): ?>
                     <div class="col-auto">
                         <a href="add_product.php" class="btn btn-primary px-4 py-2 fw-bold shadow-sm">
                             <i class="bi bi-plus-lg me-2"></i> Add New Product
                         </a>
                     </div>
+                    <?php endif; ?>
                 </div>
                 
                 <!-- Smart Alert Container -->
@@ -269,6 +271,7 @@ foreach ($inventory as $item) {
         // Data from PHP (initial load)
         let productNames = <?php echo json_encode($productNames); ?>;
         let productSales = <?php echo json_encode($productSales); ?>;
+        const userRole = '<?php echo $_SESSION['user']['role']; ?>';
 
         // Theme Toggle Logic
         const themeToggle = document.getElementById('themeToggle');
@@ -557,6 +560,7 @@ foreach ($inventory as $item) {
                         ${item.supplier}
                     </td>
                     <td class="px-4 py-3 text-center">
+                        <?php if ($_SESSION['user']['role'] === 'admin'): ?>
                         <div class="d-flex justify-content-center">
                             <a href="edit_product.php?id=${item.id}" class="action-btn btn-edit-table me-2" title="Edit Item">
                                 <i class="bi bi-pencil-square"></i>
@@ -565,6 +569,9 @@ foreach ($inventory as $item) {
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
+                        <?php else: ?>
+                        <span class="badge bg-light text-secondary"><i class="bi bi-eye me-1"></i> View Only</span>
+                        <?php endif; ?>
                     </td>
                 `;
                 tableBody.appendChild(row);
