@@ -97,7 +97,7 @@ while ($row = $result->fetch_assoc()) {
                     </div>
                     <?php if ($_SESSION['user']['role'] === 'admin'): ?>
                     <div class="col-auto">
-                        <a href="add_product.php" class="btn btn-primary px-4 py-2 fw-bold shadow-sm">
+                        <a href="add_product.php" class="btn btn-success px-4 py-2 fw-bold shadow-sm">
                             <i class="bi bi-plus-lg me-2"></i> Add New Product
                         </a>
                     </div>
