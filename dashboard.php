@@ -513,7 +513,7 @@ while ($row = $result->fetch_assoc()) {
             tableBody.innerHTML = '';
             
             if (data.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="6">
+                tableBody.innerHTML = `<tr><td colspan="7">
                     <div class="empty-state">
                         <i class="bi bi-box2"></i>
                         <h5 class="text-secondary">No inventory items found</h5>
@@ -528,26 +528,24 @@ while ($row = $result->fetch_assoc()) {
                 const qty = parseInt(item.quantity);
                 const threshold = parseInt(item.min_threshold || 10);
                 const isLowStock = qty < threshold;
+                const isHighDemand = qty > (threshold * 3); // Example high demand condition
                 
-                // Highlight low stock items
-                const badgeClass = isLowStock ? 'bg-danger' : 
-                                 qty < (threshold + 5) ? 'bg-warning text-dark' : 'bg-success';
-                
-                if (isLowStock) row.classList.add('table-danger');
+                if (isLowStock) row.classList.add('low-stock-row');
+                else if (isHighDemand) row.classList.add('high-demand-row');
                 
                 row.innerHTML = `
                     <td class="px-4 py-3">
                         <div class="fw-bold d-flex align-items-center">
-                            <i class="bi bi-dot fs-2 text-${isLowStock ? 'danger' : (qty < (threshold + 5) ? 'warning' : 'success')} me-n1"></i>
+                            <span class="status-indicator status-${isLowStock ? 'low' : 'good'}"></span>
                             ${item.name}
-                            ${isLowStock ? '<span class="ms-2 badge bg-danger text-uppercase low-stock-pulse" style="font-size: 0.6rem;"><i class="bi bi-graph-down-arrow me-1"></i>Low Stock</span>' : ''}
+                            ${isLowStock ? '<span class="ms-2 badge bg-danger text-uppercase low-stock-pulse" style="font-size: 0.6rem;"><i class="bi bi-exclamation-triangle me-1"></i>Low Stock</span>' : ''}
                         </div>
                     </td>
                     <td class="px-4 py-3">
                         <span class="badge bg-light text-secondary border border-secondary border-opacity-25 px-3 py-2">${item.category}</span>
                     </td>
                     <td class="px-4 py-3 text-center">
-                        <span class="badge ${badgeClass} rounded-pill px-3 py-2" style="min-width: 45px;">${qty}</span>
+                        <span class="badge ${isLowStock ? 'bg-danger' : 'bg-success'} rounded-pill px-3 py-2" style="min-width: 45px;">${qty}</span>
                     </td>
                     <td class="px-4 py-3">
                         <div class="fw-bold">$${parseFloat(item.price).toFixed(2)}</div>
@@ -557,13 +555,13 @@ while ($row = $result->fetch_assoc()) {
                              <i class="bi bi-cpu me-1"></i> ${item.forecast}
                         </span>
                         <div class="mt-1" style="font-size: 0.75rem;">
-                            <span class="text-${item.trend === 'up' ? 'success' : (item.trend === 'down' ? 'danger' : 'secondary')}">
-                                <i class="bi bi-arrow-${item.trend === 'up' ? 'up' : (item.trend === 'down' ? 'down' : 'dash')}-right-short"></i>
-                                ${item.trend.toUpperCase()}
+                            <span class="text-${isLowStock ? 'danger' : 'success'} fw-bold">
+                                <i class="bi bi-arrow-${isLowStock ? 'down' : 'up'}-right-short"></i>
+                                ${isLowStock ? 'REPLENISH' : 'OPTIMAL'}
                             </span>
                         </div>
                     </td>
-                    <td class="px-4 py-3 text-secondary">
+                    <td class="px-4 py-3 text-secondary text-truncate" style="max-width: 150px;">
                         ${item.supplier}
                     </td>
                     <td class="px-4 py-3 text-center">
@@ -765,7 +763,11 @@ while ($row = $result->fetch_assoc()) {
                     }
                 });
             }
-        }
+        // Initial fetch
+        fetchInventoryData();
+
+        // Enable auto-refresh every 5 seconds for real-time updates
+        setInterval(fetchInventoryData, 5000);
     </script>
 </body>
 </html>

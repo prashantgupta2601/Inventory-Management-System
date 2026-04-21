@@ -1,6 +1,5 @@
 <?php
 require_once '../config.php';
-require_once 'ForecastingUtil.php';
 
 header('Content-Type: application/json');
 
@@ -16,15 +15,16 @@ $result = $conn->query($query);
 
 $inventory = [];
 while ($row = $result->fetch_assoc()) {
-    $sales_history = json_decode($row['sales_history'], true) ?? [];
-    $monthly_sales = json_decode($row['monthly_sales'], true) ?? [];
+    $quantity = (int)$row['quantity'];
     
-    // Use the professional ForecastingUtil for AI insights
-    $forecastVal = ForecastingUtil::predictNext($sales_history);
-    $trend = ForecastingUtil::calculateTrend($sales_history);
+    // AI Forecasting: Simple 20% Growth logic as requested
+    $forecastVal = round($quantity * 1.2);
     
-    $row['sales_history'] = $sales_history;
-    $row['monthly_sales'] = $monthly_sales;
+    // Trend calculation: Compare to threshold
+    $trend = ($quantity < (int)$row['min_threshold']) ? 'down' : 'up';
+    
+    $row['sales_history'] = json_decode($row['sales_history'], true) ?? [];
+    $row['monthly_sales'] = json_decode($row['monthly_sales'], true) ?? [];
     $row['forecast'] = $forecastVal;
     $row['trend'] = $trend;
     

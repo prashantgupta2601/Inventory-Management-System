@@ -328,3 +328,34 @@ body, .card, #sidebar, #content, .navbar, .form-control {
 .btn-delete-table:hover {
     background: #e74a3b;
 }
+
+.low-stock-row {
+    background-color: rgba(231, 74, 59, 0.05) !important;
+}
+
+.high-demand-row {
+    background-color: rgba(16, 185, 129, 0.05) !important;
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.status-low { background-color: var(--danger-color); box-shadow: 0 0 8px var(--danger-color); }
+.status-good { background-color: var(--success-color); }
+
+.table tr {
+    border-left: 4px solid transparent;
+}
+
+.table tr.low-stock-row {
+    border-left: 4px solid var(--danger-color);
+}
+
+.table tr.high-demand-row {
+    border-left: 4px solid var(--success-color);
+}
