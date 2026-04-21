@@ -6,6 +6,11 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
+if ($_SESSION['user']['role'] !== 'admin') {
+    header('Location: dashboard.php');
+    exit;
+}
+
 $id = $_GET['id'] ?? '';
 if (!$id) {
     header('Location: dashboard.php');
