@@ -338,9 +338,6 @@ while ($row = $result->fetch_assoc()) {
             // Set up event listeners
             document.getElementById('searchInput').addEventListener('input', filterItems);
             
-            // Refresh data every 60 seconds
-            setInterval(fetchInventoryData, 60000);
-            
             // Check for success messages in URL
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('added')) {
@@ -763,6 +760,8 @@ while ($row = $result->fetch_assoc()) {
                     }
                 });
             }
+        }
+
         // Initial fetch
         fetchInventoryData();
 
