@@ -346,6 +346,9 @@ while ($row = $result->fetch_assoc()) {
             } else if (urlParams.has('updated')) {
                 showToast('Product updated successfully!', 'success');
                 window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (urlParams.has('deleted')) {
+                showToast('Product deleted successfully!', 'warning');
+                window.history.replaceState({}, document.title, window.location.pathname);
             } else {
                 showToast('Welcome to your Dashboard!', 'success');
             }
@@ -670,20 +673,7 @@ while ($row = $result->fetch_assoc()) {
 
         document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
             if (itemToDelete) {
-                fetch(`api/delete.php?id=${itemToDelete}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const deleteModalEl = document.getElementById('deleteModal');
-                        const deleteModal = bootstrap.Modal.getInstance(deleteModalEl);
-                        deleteModal.hide();
-                        fetchInventoryData();
-                        showToast('Item deleted successfully!', 'warning');
-                        itemToDelete = null;
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showToast('Error deleting item.', 'danger');
-                    });
+                window.location.href = `delete_product.php?id=${itemToDelete}`;
             }
         });
 
