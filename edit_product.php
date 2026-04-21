@@ -38,16 +38,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "Security validation failed. Please refresh.";
         $messageType = "danger";
     } else {
-        $name = $_POST['name'] ?? '';
-        $category = $_POST['category'] ?? '';
-        $quantity = (int)($_POST['quantity'] ?? 0);
-        $price = (float)($_POST['price'] ?? 0);
-        $supplier = $_POST['supplier'] ?? '';
+        $name = trim($_POST['name'] ?? '');
+        $category = trim($_POST['category'] ?? '');
+        $quantity = $_POST['quantity'];
+        $price = $_POST['price'];
+        $supplier = trim($_POST['supplier'] ?? '');
         $min_threshold = (int)($_POST['min_threshold'] ?? 10);
-        
-        // Handle comma-separated sales data
-        $sales_history = !empty($_POST['sales_history']) ? json_encode(array_map('intval', explode(',', $_POST['sales_history']))) : $product['sales_history'];
-        $monthly_sales = !empty($_POST['monthly_sales']) ? json_encode(array_map('intval', explode(',', $_POST['monthly_sales']))) : $product['monthly_sales'];
+
+        // Validation
+        if (empty($name) || empty($category) || empty($supplier) || $quantity === '' || $price === '') {
+            $message = "All fields are required.";
+            $messageType = "danger";
+        } elseif (!is_numeric($quantity) || !is_numeric($price)) {
+            $message = "Quantity and Price must be numbers.";
+            $messageType = "danger";
+        } else {
+            $quantity = (int)$quantity;
+            $price = (float)$price;
+            
+            // Handle comma-separated sales data
+            $sales_history = !empty($_POST['sales_history']) ? json_encode(array_map('intval', explode(',', $_POST['sales_history']))) : $product['sales_history'];
+            $monthly_sales = !empty($_POST['monthly_sales']) ? json_encode(array_map('intval', explode(',', $_POST['monthly_sales']))) : $product['monthly_sales'];
 
         $update_stmt = $conn->prepare("UPDATE inventory SET name=?, category=?, quantity=?, price=?, supplier=?, min_threshold=?, sales_history=?, monthly_sales=? WHERE id=?");
         $update_stmt->bind_param("sssidisss", $name, $category, $quantity, $price, $supplier, $min_threshold, $sales_history, $monthly_sales, $id);

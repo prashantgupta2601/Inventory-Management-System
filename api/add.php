@@ -17,13 +17,29 @@ if (!$input) {
     exit;
 }
 
-$id = uniqid();
-$name = $input['name'] ?? '';
-$category = $input['category'] ?? '';
-$quantity = (int)($input['quantity'] ?? 0);
-$price = (float)($input['price'] ?? 0);
-$supplier = $input['supplier'] ?? '';
+$id = $input['id'] ?: uniqid();
+$name = trim($input['name'] ?? '');
+$category = trim($input['category'] ?? '');
+$quantity = $input['quantity'] ?? '';
+$price = $input['price'] ?? '';
+$supplier = trim($input['supplier'] ?? '');
 $min_threshold = (int)($input['min_threshold'] ?? 10);
+
+// Validation
+if (empty($name) || empty($category) || empty($supplier) || $quantity === '' || $price === '') {
+    http_response_code(400);
+    echo json_encode(['error' => 'All fields are required']);
+    exit;
+}
+
+if (!is_numeric($quantity) || !is_numeric($price)) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Quantity and Price must be numbers']);
+    exit;
+}
+
+$quantity = (int)$quantity;
+$price = (float)$price;
 
 // Default empty sales data for new products
 $sales_history = json_encode([0, 0, 0, 0]);

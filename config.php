@@ -45,9 +45,16 @@ $sql_inventory = "CREATE TABLE IF NOT EXISTS inventory (
     min_threshold INT DEFAULT 0,
     sales_history TEXT,
     monthly_sales TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )";
 $conn->query($sql_inventory);
+
+// Add created_at column if it doesn't exist (for existing tables)
+$result = $conn->query("SHOW COLUMNS FROM inventory LIKE 'created_at'");
+if ($result->num_rows == 0) {
+    $conn->query("ALTER TABLE inventory ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP AFTER monthly_sales");
+}
 
 $sql_users = "CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,

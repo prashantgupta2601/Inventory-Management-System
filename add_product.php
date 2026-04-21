@@ -20,27 +20,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "Security validation failed. Please refresh.";
         $messageType = "danger";
     } else {
-        $id = $_POST['id'] ?? uniqid();
-        $name = $_POST['name'] ?? '';
-        $category = $_POST['category'] ?? '';
-        $quantity = (int)($_POST['quantity'] ?? 0);
-        $price = (float)($_POST['price'] ?? 0);
-        $supplier = $_POST['supplier'] ?? '';
+        $id = $_POST['id'] ?: uniqid();
+        $name = trim($_POST['name'] ?? '');
+        $category = trim($_POST['category'] ?? '');
+        $quantity = $_POST['quantity'];
+        $price = $_POST['price'];
+        $supplier = trim($_POST['supplier'] ?? '');
         $min_threshold = (int)($_POST['min_threshold'] ?? 10);
-        
-        // Default empty sales data for new products
-        $sales_history = json_encode([0, 0, 0, 0]);
-        $monthly_sales = json_encode([0, 0, 0, 0, 0, 0]);
 
-        $stmt = $conn->prepare("INSERT INTO inventory (id, name, category, quantity, price, supplier, min_threshold, sales_history, monthly_sales) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssidsiss", $id, $name, $category, $quantity, $price, $supplier, $min_threshold, $sales_history, $monthly_sales);
-
-        if ($stmt->execute()) {
-            header('Location: dashboard.php?added=1');
-            exit;
-        } else {
-            $message = "Database error: " . $conn->error;
+        // Validation
+        if (empty($name) || empty($category) || empty($supplier) || $quantity === '' || $price === '') {
+            $message = "All fields are required.";
             $messageType = "danger";
+        } elseif (!is_numeric($quantity) || !is_numeric($price)) {
+            $message = "Quantity and Price must be numbers.";
+            $messageType = "danger";
+        } else {
+            $quantity = (int)$quantity;
+            $price = (float)$price;
+            
+            // Default empty sales data for new products
+            $sales_history = json_encode([0, 0, 0, 0]);
+            $monthly_sales = json_encode([0, 0, 0, 0, 0, 0]);
+
+            $stmt = $conn->prepare("INSERT INTO inventory (id, name, category, quantity, price, supplier, min_threshold, sales_history, monthly_sales) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssidsiss", $id, $name, $category, $quantity, $price, $supplier, $min_threshold, $sales_history, $monthly_sales);
+
+            if ($stmt->execute()) {
+                header('Location: dashboard.php?added=1');
+                exit;
+            } else {
+                $message = "Database error: " . $conn->error;
+                $messageType = "danger";
+            }
         }
     }
 }
