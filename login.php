@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf_token($csrf_token)) {
         $error = "Security validation failed. Please refresh.";
     } else {
-        $stmt = $conn->prepare("SELECT id, username, password_hash FROM users WHERE username = ?");
+        $stmt = $conn->prepare("SELECT id, username, password_hash, role FROM users WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -19,7 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (password_verify($password, $user['password_hash'])) {
                 $_SESSION['user'] = [
                     'id' => $user['id'],
-                    'username' => $user['username']
+                    'username' => $user['username'],
+                    'role' => $user['role']
                 ];
                 header('Location: dashboard.php');
                 exit;
