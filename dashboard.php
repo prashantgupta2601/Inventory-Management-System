@@ -1,20 +1,20 @@
-<?php
-session_start();
+require_once 'config.php';
+
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');
     exit;
 }
 
-// Prepare data for Sales Trend Chart
-$data = json_decode(@file_get_contents('data.json'), true);
-$inventory = $data['inventory'] ?? [];
-
+// Prepare data for Sales Trend Chart from MySQL
+$result = $conn->query("SELECT name, monthly_sales FROM inventory");
+$inventory = [];
 $productNames = [];
 $productSales = [];
 
-foreach ($inventory as $item) {
-    $productNames[] = $item['name'];
-    $productSales[] = $item['monthly_sales'] ?? [0, 0, 0, 0, 0, 0];
+while ($row = $result->fetch_assoc()) {
+    $m_sales = json_decode($row['monthly_sales'], true) ?? [0, 0, 0, 0, 0, 0];
+    $productNames[] = $row['name'];
+    $productSales[] = $m_sales;
 }
 ?>
 <!DOCTYPE html>
@@ -106,48 +106,54 @@ foreach ($inventory as $item) {
                 <!-- Smart Alert Container -->
                 <div id="smartAlertContainer"></div>
 
-                <!-- Stats Cards (Step 4 placeholders) -->
-                <div class="row g-4 mb-4">
+                <!-- Stats Cards -->
+                <div class="row g-4 mb-5">
                     <div class="col-md-4">
-                        <div class="card p-3 border-0 shadow-sm border-start border-primary border-4">
+                        <div class="card p-3 border-0 border-top border-primary border-4 shadow-sm">
                             <div class="card-body">
                                 <div class="row align-items-center">
                                     <div class="col">
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Items</div>
-                                        <div id="totalItems" class="h3 mb-0 font-weight-bold text-gray-800">0</div>
+                                        <div id="totalItems" class="h2 mb-0 font-weight-bold text-dark">0</div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="bi bi-calendar-check fs-1 text-gray-300"></i>
+                                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                                            <i class="bi bi-box-seam fs-3 text-primary"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card p-3 border-0 shadow-sm border-start border-danger border-4">
+                        <div class="card p-3 border-0 border-top border-danger border-4 shadow-sm">
                             <div class="card-body">
                                 <div class="row align-items-center">
                                     <div class="col">
                                         <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Low Stock</div>
-                                        <div id="lowStockItems" class="h3 mb-0 font-weight-bold text-gray-800">0</div>
+                                        <div id="lowStockItems" class="h2 mb-0 font-weight-bold text-dark">0</div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="bi bi-exclamation-triangle fs-1 text-gray-300"></i>
+                                        <div class="bg-danger bg-opacity-10 p-3 rounded-circle">
+                                            <i class="bi bi-exclamation-triangle fs-3 text-danger"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card p-3 border-0 shadow-sm border-start border-success border-4">
+                        <div class="card p-3 border-0 border-top border-success border-4 shadow-sm">
                             <div class="card-body">
                                 <div class="row align-items-center">
                                     <div class="col">
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Inventory Value</div>
-                                        <div id="inventoryValue" class="h3 mb-0 font-weight-bold text-gray-800">$0.00</div>
+                                        <div id="inventoryValue" class="h2 mb-0 font-weight-bold text-dark">$0.00</div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="bi bi-currency-dollar fs-1 text-gray-300"></i>
+                                        <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                                            <i class="bi bi-currency-dollar fs-3 text-success"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
